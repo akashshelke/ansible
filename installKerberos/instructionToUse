@@ -1,0 +1,14 @@
+step1:
+You have to be with two groups in inventory.
+1.your master node group where kdc and admin server is expected
+2.rest of the servers in cluster
+deployKrb.yml  have variables (do not change there naming conventions , as they are embedded in tasks yml, you can point your own inventory groups to them as like below) 
+master_nodes: <your master node group from inventory >
+follower_nodes: <server groups from inventory>
+
+step2:
+Place your krb5.conf in install_krb/files/krb5.conf 
+
+step3:
+start your script
+ansible-playbook deployKrb.yml 
