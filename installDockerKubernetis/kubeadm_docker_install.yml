@@ -1,0 +1,76 @@
+---
+- name: docker installation started  
+  hosts: all
+  tasks:
+    - name: disable selinux
+      shell: "setenforce 0;sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config"
+    - name: creating kubernetis repo
+      copy: 
+        dest: "/etc/yum.repos.d/kubernetes.repo"
+        content: |
+          [kubernetes]
+          name=Kubernetes
+          baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-\$basearch
+          enabled=1
+          gpgcheck=1
+          repo_gpgcheck=1
+          gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+          exclude=kubelet kubeadm kubectl
+    - name: update OS
+      yum: 
+        name: "*"
+        state: latest 
+    - name:  installing docker repo
+      shell: yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+    - name: installing packages
+      yum: 
+        name: "{{ item }}"
+        state: present
+        disable_excludes: kubernetes
+      loop:
+        - yum-utils 
+        - device-mapper-persistent-data 
+        - lvm2
+        - containerd.io-1.2.13 
+        - docker-ce-19.03.11 
+        - docker-ce-cli-19.03.11 
+        - kubelet
+        - kubeadm
+        - kubectl   
+    - name: create dir
+      file: 
+        path: "{{ item }}"
+        state: directory 
+      loop:
+        - /etc/systemd/system/docker.service.d
+        - /etc/docker
+
+    - name: creating daemon.json 
+      copy: 
+        dest: "/etc/docker/daemon.json"
+        content: |
+           {
+             "exec-opts": ["native.cgroupdriver=systemd"],
+            "log-driver": "json-file",
+             "log-opts": {
+             "max-size": "100m"
+               },
+            "storage-driver": "overlay2",
+            "storage-opts": [
+             "overlay2.override_kernel_check=true"
+                ]
+               }
+      notify: 
+        - Start and enable docker
+        - enable kublet
+  handlers:
+    - name: Start and enable docker
+      service: 
+        name: docker
+        state: started
+        enabled: yes
+    - name: enable kublet 
+      service:
+       name: kubelet
+       state: started 
+       enabled : yes

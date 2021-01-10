@@ -1,0 +1,12 @@
+---
+- name: installing krb packages
+  yum: 
+   name: "{{ item }}"
+   state: present
+  loop: "{{ krb_package_list }}"
+- name: copying krb.conf
+  copy:
+   src: krb5.conf
+   dest: /etc/
+   mode: 644
+  when: "follower_nodes in group_names or master_nodes in group_names"
