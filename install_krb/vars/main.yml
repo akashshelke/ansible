@@ -1,6 +1,0 @@
----
-# vars file for install_krb
-krb_package_list: 
-     - krb5-server
-     - krb5-libs
-     - krb5-workstation
