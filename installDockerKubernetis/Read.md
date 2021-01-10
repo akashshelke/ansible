@@ -1,22 +1,21 @@
-the ansibel script is just to install packages and not actual installation 
+Step1. run the ansibel script 
+#ansible-playbook 
 
-You can now join any number of control-plane nodes by copying certificate authorities
-and service account keys on each node and then running the following as root:
+Step2:
+on master node run kubeadm init
+#kubeadm init --pod-network-cidr=192.168.0.0/16 --control-plane-endpoint=kube-master 
 
-  kubeadm join kube-master:6443 --token em4nui.rd0r2pjmnfaqek6l \
-    --discovery-token-ca-cert-hash sha256:7bdf1818546290b8b7e6bef875c611f578cefc113e1d81331f5b374a82848b78 \
-    --control-plane 
+control-plane-endpoint is kind of hostname alias, this helps when more master are added in future. You can add this alias to your master node in /etc/hosts or dns of every worker node
+#cat /etc/hosts |grep mater
+<ip of master> <fqdn of master> kube-master 
 
-Then you can join any number of worker nodes by running the following on each as root:
+step3: above commands will return some more commands and instruction, please folloe those as it is 
 
-kubeadm join kube-master:6443 --token em4nui.rd0r2pjmnfaqek6l \
-    --discovery-token-ca-cert-hash sha256:7bdf1818546290b8b7e6bef875c611f578cefc113e1d81331f5b374a82848b78 
+setp4:initiate calico network before joining network like below 
+systemctl enable docker.service;systemctl enable kubelet.service
+   40  kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+   41  kubeadm join kube-master:6443 --token <token>     --discovery-token-ca-cert-hash <hash>
 
-    workernodes activities
-    -just install compatibale docker and kubeadm 
-    then run output of that kubeadm init 
-
-
- for calico
+ for more calico and kubeadm
  https://docs.projectcalico.org/getting-started/kubernetes/quickstart
  https://medium.com/platformer-blog/running-a-kubernetes-cluster-on-ubuntu-with-calico-9e372fb9175e
