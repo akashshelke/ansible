@@ -1,0 +1,9 @@
+- name: Start Keberos admin
+  service:
+   name: "{{ item }}"
+   state: started 
+   enabled: yes
+  when: "master_nodes in group_names"
+  loop: 
+    - krb5kdc
+    - kadmin

@@ -1,0 +1,11 @@
+---
+- name: updatning krb datbase
+  command: kdb5_util create -s -P {{ masterPass }}   
+  when: "master_nodes in group_names"
+  notify: Start Keberos admin
+- name: changing kadm5.acl 
+  copy:
+   src: kadm5.acl
+   dest: /var/kerberos/krb5kdc/
+   mode: 644
+  when: "master_nodes in  group_names"
