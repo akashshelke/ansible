@@ -1,5 +1,5 @@
 Step1. run the ansibel script 
-#ansible-playbook 
+#ansible-playbook kubeadm_docker_install.yml
 
 Step2:
 on master node run kubeadm init
