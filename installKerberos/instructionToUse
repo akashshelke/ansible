@@ -8,7 +8,12 @@ follower_nodes: <server groups from inventory>
 
 step2:
 Place your krb5.conf in install_krb/files/krb5.conf 
+change startKrb/files/kadm5.acl with your realm
 
 step3:
 start your script
 ansible-playbook deployKrb.yml 
+
+step4: then login to master node and create admin principle
+#kadmin.local
+#addprinc admin/admin@HADOOP.COM
